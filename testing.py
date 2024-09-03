@@ -50,3 +50,5 @@ while i < 2234556: # if booolean == False: dsp reemplazar con  esto y vincularlo
     if j < 20:
         j+=1
     
+def holla():
+    pass
