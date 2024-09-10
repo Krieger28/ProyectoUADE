@@ -6,7 +6,7 @@ import random
 
 
 clear = lambda: os.system('cls')
-
+pieza = "🟨"
 
 
 # Funcion para generar un tablero
@@ -31,12 +31,13 @@ def crearTablero():
 
 def crearFPS (tablero):
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
-        pieza = "🟨"
+        
         x, y = ancho // 2, 0
         while True:
             # obtenerPosicionInicial()
-            time.sleep(0.3)
             x, y = inputsTeclado(tablero,pieza, x, y)
+            time.sleep(0.1)
+            
             clear()
             imprimirTablero(tablero)
             nuevo_x, nuevo_y = moverPiezaAbajo(tablero, pieza, x, y)
@@ -48,7 +49,7 @@ def crearFPS (tablero):
 # Función para obtener una posición inicial aleatoria para una nueva pieza
 
 def obtenerPosicionInicial():
-    return (random.randint(0, ancho - 1), 0)
+    return (5, 0)
 
 # Funcion para crear piezas con sus formas
 
@@ -99,7 +100,7 @@ def moverIzq(tablero, pieza, x, y):
 # Funcion para mover  la pieza a la derecha
 
 def moverDer(tablero, pieza, x, y):
-    if x + 1 >= 0 and tablero[y][x + 1] == "⬛":
+    if x + 1 <= 9 and tablero[y][x + 1] == "⬛":
         borrarPieza(tablero, x, y)
         x += 1
         colocarPieza(tablero, pieza, x, y)
@@ -118,6 +119,30 @@ def moverPiezaAbajo(tablero, pieza, x, y):
         colocarPieza(tablero, pieza, x, y)
         return x, y
     return x, y
+
+
+
+
+# Funcion para LOG IN
+
+
+
+# Funcion para que se detecte los inputs del usuario
+
+
+
+# Funcion para que si una pieza no puede ingresar al tablero por estar lleno de por finalizado el juego
+
+# Aumentar velocidad del juego
+
+# Esconder primeras 4 lineas
+
+#
+
+# Input para voler a jugar
+
+
+
 
 
 
