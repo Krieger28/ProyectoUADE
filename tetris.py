@@ -1,3 +1,4 @@
+import keyboard
 import time
 import os
 import random
@@ -14,13 +15,14 @@ alto = 24
 ancho = 10
 
 def imprimirTablero(tablero):
+    '''ESCRIBIR LA DESCRIPCION DE CADA FUNCION EN ESTE LUGAR DE CADA FUNCION CON ESTAS COMILLAS'''
     print("+" + "--" * ancho + "+") # Borde de arriba
 
     for fila in tablero:
         print("|" + "".join(fila) + "|")  # Filas del tablero
 
     print("+" + "--" * ancho + "+") # Borde de abajo
-
+    
 def crearTablero():
     return [[ "⬛" for _ in range(ancho)] for _ in range(alto)]
 
@@ -29,20 +31,22 @@ def crearTablero():
 
 def crearFPS (tablero):
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
-        pieza = "🟨" 
+        pieza = "🟨"
         x, y = ancho // 2, 0
         while True:
-            obtenerPosicionInicial()
+            # obtenerPosicionInicial()
             time.sleep(0.3)
+            x, y = inputsTeclado(tablero,pieza, x, y)
             clear()
-            imprimirTablero(tablero) 
+            imprimirTablero(tablero)
             nuevo_x, nuevo_y = moverPiezaAbajo(tablero, pieza, x, y)
             if nuevo_y == alto - 1 or (nuevo_y + 1 < alto and tablero[nuevo_y + 1][nuevo_x] != "⬛"):
                 break
+            
             x, y = nuevo_x, nuevo_y
-    
+
 # Función para obtener una posición inicial aleatoria para una nueva pieza
-    
+
 def obtenerPosicionInicial():
     return (random.randint(0, ancho - 1), 0)
 
@@ -63,7 +67,45 @@ def borrarPieza(tablero, x, y):
 
 # Funcion para que se detecte los inputs del usuario
 
-# Funcion para rotar piezas 
+def inputsTeclado(tablero, pieza, x, y):
+    if keyboard.is_pressed("space") == True:
+        pass #bajar mas rapido o insta ponerla en donde quedaria
+    if keyboard.is_pressed("down") == True:
+        pass #bajar mas rapido o insta ponerla en donde quedaria
+    if keyboard.is_pressed("up") == True:
+        pass #girar pieza
+    if keyboard.is_pressed("left") == True:
+        x, y = moverIzq(tablero, pieza, x, y) 
+        return x, y
+    if keyboard.is_pressed("right") == True:
+        x, y = moverDer(tablero, pieza, x, y) 
+        return x, y
+    if keyboard.is_pressed("esc") == True:
+        pass #cerrar juego, ver de aplicarlo al primer  while???
+    if keyboard.is_pressed("p") == True:
+        pass #Pausar, ver de aplicarlo al primer  while???
+    return x, y
+    
+# Funcion para mover  la pieza a la izquierda
+
+def moverIzq(tablero, pieza, x, y):
+    if x - 1 >= 0 and tablero[y][x - 1] == "⬛":
+        borrarPieza(tablero, x, y)
+        x -= 1
+        colocarPieza(tablero, pieza, x, y)
+    return x, y 
+
+
+# Funcion para mover  la pieza a la derecha
+
+def moverDer(tablero, pieza, x, y):
+    if x + 1 >= 0 and tablero[y][x + 1] == "⬛":
+        borrarPieza(tablero, x, y)
+        x += 1
+        colocarPieza(tablero, pieza, x, y)
+    return x, y 
+
+# Funcion para rotar piezas
 
 # Funcion para simular la caida de la pieza manual
 
@@ -81,7 +123,7 @@ def moverPiezaAbajo(tablero, pieza, x, y):
 
 # Funcion para que detecte en el tablero si una fila esta completa
 
-#  Funcion para que si una pieza no puede ingresar al tablero por 
+#  Funcion para que si una pieza no puede ingresar al tablero por
 # estar lleno de por finalizado el juego
 
 
