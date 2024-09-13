@@ -6,7 +6,7 @@ import random
 
 
 clear = lambda: os.system('cls')
-pieza = "🟨"
+PIEZA = "🟨"
 VACIO = "⬛"
 
 # Funcion para generar un tablero
@@ -32,20 +32,20 @@ def crearTablero():
 # Funcion para renderear los cambios en la matriz
 def crearFPS (tablero):
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
-        
         x, y = ANCHO // 2, 0
         while True:
-            x, y = inputsTeclado(tablero,pieza, x, y)
-            time.sleep(0.5)
-            
-            
+            x, y = inputsTeclado(tablero,PIEZA, x, y)
+            time.sleep(0.3)            
             clear()
             imprimirTablero(tablero)
-            nuevo_x, nuevo_y = moverPiezaAbajo(tablero, pieza, x, y)
-            if nuevo_y == ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO):
-                break
-            
+            nuevo_x, nuevo_y = moverPiezaAbajo(tablero, PIEZA, x, y)
+            if puedeAvanzar(nuevo_y,tablero,nuevo_x)==False:
+                break   
             x, y = nuevo_x, nuevo_y
+
+
+# Funcion para detectar si la pieza hizo tope
+puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
 
 
 # Función para obtener una posición inicial para una nueva pieza
