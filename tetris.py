@@ -7,67 +7,65 @@ import random
 
 clear = lambda: os.system('cls')
 pieza = "🟨"
-
+VACIO = "⬛"
 
 # Funcion para generar un tablero
-
-alto = 24
-ancho = 10
+ALTO = 24
+ANCHO = 10
 
 def imprimirTablero(tablero):
     '''ESCRIBIR LA DESCRIPCION DE CADA FUNCION EN ESTE LUGAR DE CADA FUNCION CON ESTAS COMILLAS'''
-    print("+" + "--" * ancho + "+") # Borde de arriba
+    print("+" + "--" * ANCHO + "+") # Borde de arriba
 
+    aux=0
     for fila in tablero:
-        print("|" + "".join(fila) + "|")  # Filas del tablero
-
-    print("+" + "--" * ancho + "+") # Borde de abajo
+            if aux>=4: #No imprime las primeras 4 filas
+                print("|" + "".join(fila) + "|")  # Filas del tablero
+            aux+=1
+    
+    print("+" + "--" * ANCHO + "+") # Borde de abajo
     
 def crearTablero():
-    return [[ "⬛" for _ in range(ancho)] for _ in range(alto)]
+    return [[ VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
 
 
 # Funcion para renderear los cambios en la matriz
-
 def crearFPS (tablero):
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
         
-        x, y = ancho // 2, 0
+        x, y = ANCHO // 2, 0
         while True:
-            # obtenerPosicionInicial()
             x, y = inputsTeclado(tablero,pieza, x, y)
-            time.sleep(0.1)
+            time.sleep(0.5)
+            
             
             clear()
             imprimirTablero(tablero)
             nuevo_x, nuevo_y = moverPiezaAbajo(tablero, pieza, x, y)
-            if nuevo_y == alto - 1 or (nuevo_y + 1 < alto and tablero[nuevo_y + 1][nuevo_x] != "⬛"):
+            if nuevo_y == ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO):
                 break
             
             x, y = nuevo_x, nuevo_y
 
-# Función para obtener una posición inicial aleatoria para una nueva pieza
 
+# Función para obtener una posición inicial para una nueva pieza
 def obtenerPosicionInicial():
     return (5, 0)
 
-# Funcion para crear piezas con sus formas
-
-# Funcion para que seleccione una pieza aleatoria
 
 # Funcion para que se coloque la pieza en el tablero
-
 def colocarPieza(tablero, pieza, x, y):
-    if 0 <= x < ancho and 0 <= y < alto:
+    if 0 <= x < ANCHO and 0 <= y < ALTO:
         tablero[y][x] = pieza
+
 
 # function para Borrar la pieza de la posicion anterior
 def borrarPieza(tablero, x, y):
-    if 0 <= x < ancho and 0 <= y < alto:
-        tablero[y][x] = "⬛"
+    if 0 <= x < ANCHO and 0 <= y < ALTO:
+        tablero[y][x] = VACIO
+
 
 # Funcion para que se detecte los inputs del usuario
-
 def inputsTeclado(tablero, pieza, x, y):
     if keyboard.is_pressed("space") == True:
         pass #bajar mas rapido o insta ponerla en donde quedaria
@@ -84,13 +82,13 @@ def inputsTeclado(tablero, pieza, x, y):
     if keyboard.is_pressed("esc") == True:
         pass #cerrar juego, ver de aplicarlo al primer  while???
     if keyboard.is_pressed("p") == True:
-        pass #Pausar, ver de aplicarlo al primer  while???
+        pass #pausar el juego
     return x, y
-    
-# Funcion para mover  la pieza a la izquierda
 
+
+# Funcion para mover  la pieza a la izquierda
 def moverIzq(tablero, pieza, x, y):
-    if x - 1 >= 0 and tablero[y][x - 1] == "⬛":
+    if x - 1 >= 0 and tablero[y][x - 1] == VACIO:
         borrarPieza(tablero, x, y)
         x -= 1
         colocarPieza(tablero, pieza, x, y)
@@ -98,22 +96,17 @@ def moverIzq(tablero, pieza, x, y):
 
 
 # Funcion para mover  la pieza a la derecha
-
 def moverDer(tablero, pieza, x, y):
-    if x + 1 <= 9 and tablero[y][x + 1] == "⬛":
+    if x + 1 < ANCHO and tablero[y][x + 1] == VACIO:
         borrarPieza(tablero, x, y)
         x += 1
         colocarPieza(tablero, pieza, x, y)
     return x, y 
 
-# Funcion para rotar piezas
-
-# Funcion para simular la caida de la pieza manual
 
 # Funcion para simular la caida de la pieza automaticamente
-
 def moverPiezaAbajo(tablero, pieza, x, y):
-    if y + 1 < alto and tablero[y + 1][x] == "⬛":
+    if y + 1 < ALTO and tablero[y + 1][x] == VACIO:
         borrarPieza(tablero, x, y)
         y += 1
         colocarPieza(tablero, pieza, x, y)
@@ -126,31 +119,13 @@ def moverPiezaAbajo(tablero, pieza, x, y):
 # Funcion para LOG IN
 
 
-
-# Funcion para que se detecte los inputs del usuario
-
-
-
 # Funcion para que si una pieza no puede ingresar al tablero por estar lleno de por finalizado el juego
+
 
 # Aumentar velocidad del juego
 
-# Esconder primeras 4 lineas
-
-#
 
 # Input para voler a jugar
-
-
-
-
-
-
-# Funcion para que detecte en el tablero si una fila esta completa
-
-#  Funcion para que si una pieza no puede ingresar al tablero por
-# estar lleno de por finalizado el juego
-
 
 
 # function para hacer funcionar el proyecto
@@ -158,3 +133,14 @@ def main():
     tablero = crearTablero()
     crearFPS (tablero)
 main()
+
+
+
+# Funcion para enviar la pieza al fondo del tablero
+# Funcion para crear piezas con sus formas
+# Funcion para que seleccione una pieza aleatoria
+# Funcion para rotar piezas
+# Funcion para que detecte en el tablero si una fila esta completa
+# Funcion para eliminar una fila 
+# Funcion para agregar una fila
+
