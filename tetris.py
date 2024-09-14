@@ -132,20 +132,20 @@ def moverPiezaAbajo(tablero, pieza, x, y):
     return x, y
 
 
-# Funcion para LOG IN
-'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
+def logIn ():
+    '''Esta función se encarga de generar un sistema de login necesario para continuar al programa principal'''
+    pass
 
 
-# Funcion para que si una pieza no puede ingresar al tablero por estar lleno de por finalizado el juego
-'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
+def finDelJuego():
+    '''Esta función se encarga de finalizar el loop principal del juego una vez que una nueva pieza no pueda
+    ingresar en 20 filas inferiores de la matriz. También presenta una opcion para “volver a jugar'''  
+    # Input para voler a jugar
+    pass
 
 
-# Aumentar velocidad del juego
-'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
-
-
-# Input para voler a jugar
-'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
+def aumentarVel():
+    '''Esta función se encarga de aumentar la velocidad del juego a medida que se eliminen filas'''
 
 
 def main():
