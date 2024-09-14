@@ -4,17 +4,20 @@ import os
 import random
 
 
-
 clear = lambda: os.system('cls')
 PIEZA = "🟨"
 VACIO = "⬛"
-
-# Funcion para generar un tablero
 ALTO = 24
 ANCHO = 10
 
+
+def crearTablero():
+    '''ESTA FUNCION GENERA UN TABLERO DE 10 COLUMNAS POR 24 FILAS'''
+    return [[ VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
+
+
 def imprimirTablero(tablero):
-    '''ESCRIBIR LA DESCRIPCION DE CADA FUNCION EN ESTE LUGAR DE CADA FUNCION CON ESTAS COMILLAS'''
+    '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
     print("+" + "--" * ANCHO + "+") # Borde de arriba
 
     aux=0
@@ -25,12 +28,9 @@ def imprimirTablero(tablero):
     
     print("+" + "--" * ANCHO + "+") # Borde de abajo
     
-def crearTablero():
-    return [[ VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
 
-
-# Funcion para renderear los cambios en la matriz
 def crearFPS (tablero):
+    '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO QUE CORRE EL PROGRAMA'''
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
         x, y = ANCHO // 2, 0
         while True:
@@ -45,21 +45,22 @@ def crearFPS (tablero):
             x, y = nuevo_x, nuevo_y
 
 
-# Funcion para detectar si la pieza hizo tope
+'''ESTA FUNCION DETECTA SI LA PIEZA PUEDE AVANZAR O SI HIZO TOPE'''
 puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
 
 
-# Funcion para eliminar fila
 def eliminarFila(tablero, y):
+    '''ESTA FUNCION SE ENCARGA DE ELIMINAR LA FILA INDICADA'''
     del tablero[tablero.index(y)]
 
-# Funcion para crear fila
+
 def agregarFila(tablero):
+    '''ESTA FUNCION AGREGA FILAS EN LA POSICION 0 DE LA MATRIZ'''
     tablero.insert(0,[VACIO for _ in range(ANCHO)])    
 
 
-# Funcion para detectar si una fila esta completa
 def filaCompleta(tablero):
+    '''ESTA FUNCION DETECTA SI UNA FILA ESTA COMPLETA, EN CASO DE HABER FILAS COMPLETAS, LAS ELIMINA Y AGREGA FILIAS NUEVAS EN LA PARTE ALTA DEL TABLERO'''
     for y in tablero:
         aux=0
         for x in y:
@@ -68,28 +69,22 @@ def filaCompleta(tablero):
         if aux==10:
             eliminarFila(tablero,y)
             agregarFila(tablero)
-        
-        
-
-# Función para obtener una posición inicial para una nueva pieza
-def obtenerPosicionInicial():
-    return (5, 0)
 
 
-# Funcion para que se coloque la pieza en el tablero
 def colocarPieza(tablero, pieza, x, y):
+    '''ESTA FUNCION COLOCA PIEZAS EN EL TABLERO'''
     if 0 <= x < ANCHO and 0 <= y < ALTO:
         tablero[y][x] = pieza
 
 
-# function para Borrar la pieza de la posicion anterior
 def borrarPieza(tablero, x, y):
+    '''ESTA FUNCION ELIMINA PIEZAS DE POSICIONES ESPECIFICAS'''
     if 0 <= x < ANCHO and 0 <= y < ALTO:
         tablero[y][x] = VACIO
 
 
-# Funcion para que se detecte los inputs del usuario
 def inputsTeclado(tablero, pieza, x, y):
+    '''ESTA FUNCION PERMITE QUE EL SISTEMA DETECTE LOS IMPUTS DEL USUARIO'''
     if keyboard.is_pressed("space") == True:
         pass #bajar mas rapido o insta ponerla en donde quedaria
     if keyboard.is_pressed("down") == True:
@@ -109,8 +104,8 @@ def inputsTeclado(tablero, pieza, x, y):
     return x, y
 
 
-# Funcion para mover  la pieza a la izquierda
 def moverIzq(tablero, pieza, x, y):
+    '''ESTA FUNCION MUEVE LA PIEZA HACIA LA IZQUIERDA'''
     if x - 1 >= 0 and tablero[y][x - 1] == VACIO:
         borrarPieza(tablero, x, y)
         x -= 1
@@ -118,8 +113,8 @@ def moverIzq(tablero, pieza, x, y):
     return x, y 
 
 
-# Funcion para mover  la pieza a la derecha
 def moverDer(tablero, pieza, x, y):
+    '''ESTA FUNCION MUEVE LA PIEZA HACIA LA DERECHA'''
     if x + 1 < ANCHO and tablero[y][x + 1] == VACIO:
         borrarPieza(tablero, x, y)
         x += 1
@@ -127,8 +122,8 @@ def moverDer(tablero, pieza, x, y):
     return x, y 
 
 
-# Funcion para simular la caida de la pieza automaticamente
 def moverPiezaAbajo(tablero, pieza, x, y):
+    '''ESTA FUNCION SIMULA LA CAIDA DE UNA PIEZA POR EL TABLERO'''
     if y + 1 < ALTO and tablero[y + 1][x] == VACIO:
         borrarPieza(tablero, x, y)
         y += 1
@@ -137,25 +132,30 @@ def moverPiezaAbajo(tablero, pieza, x, y):
     return x, y
 
 
-
-
 # Funcion para LOG IN
+'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
 
 
 # Funcion para que si una pieza no puede ingresar al tablero por estar lleno de por finalizado el juego
+'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
 
 
 # Aumentar velocidad del juego
+'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
 
 
 # Input para voler a jugar
+'''DESCRIBIR LO QUE HACE LA FUNCION ACA. COLOCARLO EN LA PRIMERA FILA LUEGO DE CREAR LA FUNCION'''
 
 
-# function para hacer funcionar el proyecto
 def main():
+    '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
     tablero = crearTablero()
     crearFPS (tablero)
 main()
+
+
+
 
 
 
