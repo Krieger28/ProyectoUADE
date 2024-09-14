@@ -35,11 +35,12 @@ def crearFPS (tablero):
         x, y = ANCHO // 2, 0
         while True:
             x, y = inputsTeclado(tablero,PIEZA, x, y)
-            time.sleep(0.3)            
+            time.sleep(0.05)            
             clear()
             imprimirTablero(tablero)
             nuevo_x, nuevo_y = moverPiezaAbajo(tablero, PIEZA, x, y)
             if puedeAvanzar(nuevo_y,tablero,nuevo_x)==False:
+                filaCompleta(tablero)
                 break   
             x, y = nuevo_x, nuevo_y
 
@@ -47,6 +48,28 @@ def crearFPS (tablero):
 # Funcion para detectar si la pieza hizo tope
 puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
 
+
+# Funcion para eliminar fila
+def eliminarFila(tablero, y):
+    del tablero[tablero.index(y)]
+
+# Funcion para crear fila
+def agregarFila(tablero):
+    tablero.insert(0,[VACIO for _ in range(ANCHO)])    
+
+
+# Funcion para detectar si una fila esta completa
+def filaCompleta(tablero):
+    for y in tablero:
+        aux=0
+        for x in y:
+            if x==PIEZA:
+                aux+=1
+        if aux==10:
+            eliminarFila(tablero,y)
+            agregarFila(tablero)
+        
+        
 
 # Función para obtener una posición inicial para una nueva pieza
 def obtenerPosicionInicial():
