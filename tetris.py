@@ -141,7 +141,7 @@ def moverPiezaAbajo(tablero, pieza, x, y):
         return x, y
     return x, y
 
-def pausa(pausado):
+def pausa(pausado): 
     '''ESTA FUNCION PAUSA EL JUEGO'''
     pausado = not pausado
     while keyboard.is_pressed("p"):
