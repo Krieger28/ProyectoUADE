@@ -2,6 +2,7 @@ import keyboard
 import time
 import os
 import random
+from re import search
 
 
 clear = lambda: os.system('cls')
@@ -34,6 +35,9 @@ def crearFPS (tablero):
     pausado = False
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
         x, y = ANCHO // 2, 0
+
+        if finalizarJuego(tablero):
+            break
         while True:
             x, y, pausado = inputsTeclado(tablero, PIEZA, x, y, pausado) # Actualiza el estado de pausa y piezas
             if pausado:
@@ -153,16 +157,36 @@ def pausa(pausado):
         time.sleep(0.1)
     return pausado
 
-def logIn ():
-    '''Esta función se encarga de generar un sistema de login necesario para continuar al programa principal'''
-    pass
+
+    
+def validarLogin():
+    usuario = input("Ingresa tu nombre de usuario: ")
+    patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
+    
+    while True:
+        contrasena = input("Ingresa tu contraseña. Debe contener al menos una mayuscula y un numero: ")
+        
+        if search(patron, contrasena):
+            break
+        else:
+            print("Contraseña inválida. Debe contener al menos una mayúscula y un número")
 
 
-def finDelJuego():
-    '''Esta función se encarga de finalizar el loop principal del juego una vez que una nueva pieza no pueda
+
+
+'''Esta función se encarga de finalizar el loop principal del juego una vez que una nueva pieza no pueda
     ingresar en 20 filas inferiores de la matriz. También presenta una opcion para “volver a jugar'''  
+    
+def finalizarJuego(tablero):
+    for y in range(4):  
+        for x in range(ANCHO):
+            if tablero[y][x] != VACIO:  
+                print("Juego terminado.")
+                return True   
+    return False  
+ 
     # Input para voler a jugar
-    pass
+    
 
 
 def aumentarVel():
@@ -171,6 +195,7 @@ def aumentarVel():
 
 def main():
     '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
+    validarLogin()
     tablero = crearTablero()
     crearFPS (tablero)
 main()
