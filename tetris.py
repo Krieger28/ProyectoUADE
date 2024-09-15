@@ -31,10 +31,15 @@ def imprimirTablero(tablero):
 
 def crearFPS (tablero):
     '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO QUE CORRE EL PROGRAMA'''
+    pausado = False
     while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
         x, y = ANCHO // 2, 0
         while True:
-            x, y = inputsTeclado(tablero,PIEZA, x, y)
+            x, y, pausado = inputsTeclado(tablero, PIEZA, x, y, pausado) # Actualiza el estado de pausa y piezas
+            if pausado:
+                time.sleep(0.1)
+                continue
+            
             time.sleep(0.05)            
             clear()
             imprimirTablero(tablero)
@@ -83,25 +88,26 @@ def borrarPieza(tablero, x, y):
         tablero[y][x] = VACIO
 
 
-def inputsTeclado(tablero, pieza, x, y):
+def inputsTeclado(tablero, pieza, x, y, pausado):
     '''ESTA FUNCION PERMITE QUE EL SISTEMA DETECTE LOS IMPUTS DEL USUARIO'''
-    if keyboard.is_pressed("space") == True:
-        pass #bajar mas rapido o insta ponerla en donde quedaria
-    if keyboard.is_pressed("down") == True:
-        pass #bajar mas rapido o insta ponerla en donde quedaria
-    if keyboard.is_pressed("up") == True:
-        pass #girar pieza
-    if keyboard.is_pressed("left") == True:
-        x, y = moverIzq(tablero, pieza, x, y) 
-        return x, y
-    if keyboard.is_pressed("right") == True:
-        x, y = moverDer(tablero, pieza, x, y) 
-        return x, y
-    if keyboard.is_pressed("esc") == True:
-        pass #cerrar juego, ver de aplicarlo al primer  while???
-    if keyboard.is_pressed("p") == True:
-        pass #pausar el juego
-    return x, y
+    if keyboard.is_pressed("space"):
+        pass  # bajar más rápido o insta ponerla en donde quedaría
+    if keyboard.is_pressed("down"):
+        pass  # bajar más rápido o insta ponerla en donde quedaría
+    if keyboard.is_pressed("up"):
+        pass  # girar pieza
+    if keyboard.is_pressed("left"):
+        x, y = moverIzq(tablero, pieza, x, y)
+    elif keyboard.is_pressed("right"):
+        x, y = moverDer(tablero, pieza, x, y)
+    
+    if keyboard.is_pressed("esc"):
+        pass  # cerrar juego, ver de aplicarlo al primer while???
+    
+    if keyboard.is_pressed("p"):
+        pausado = pausa(pausado)  # pausar el juego
+    return x, y, pausado
+
 
 
 def moverIzq(tablero, pieza, x, y):
@@ -131,6 +137,21 @@ def moverPiezaAbajo(tablero, pieza, x, y):
         return x, y
     return x, y
 
+def pausa(pausado):
+    '''ESTA FUNCION PAUSA EL JUEGO'''
+    pausado = not pausado
+    while keyboard.is_pressed("p"):
+        time.sleep(0.1)
+    
+    while pausado:
+        if keyboard.is_pressed("p"):
+            pausado = not pausado
+
+            while keyboard.is_pressed("p"):
+                time.sleep(0.1)
+            break
+        time.sleep(0.1)
+    return pausado
 
 def logIn ():
     '''Esta función se encarga de generar un sistema de login necesario para continuar al programa principal'''
