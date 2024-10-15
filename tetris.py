@@ -33,12 +33,14 @@ def imprimirTablero(tablero):
 def crearFPS (tablero):
     '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO QUE CORRE EL PROGRAMA'''
     pausado = False
-    while True:  #  vincularlo  con un input del teclado esc o algo asi y el game over
+    banderaPasadas=True
+    while banderaPasadas:  #  vincularlo  con un input del teclado esc o algo asi y el game over
         x, y = ANCHO // 2, 0
 
         if finalizarJuego(tablero):
-            break
-        while True:
+            banderaPasadas=False
+        banderaFPS=True
+        while banderaFPS:
             x, y, pausado = inputsTeclado(tablero, PIEZA, x, y, pausado) # Actualiza el estado de pausa y piezas
             if pausado:
                 time.sleep(0.1)
@@ -50,7 +52,7 @@ def crearFPS (tablero):
             nuevo_x, nuevo_y = moverPiezaAbajo(tablero, PIEZA, x, y)
             if puedeAvanzar(nuevo_y,tablero,nuevo_x)==False:
                 filaCompleta(tablero)
-                break   
+                banderaFPS=False 
             x, y = nuevo_x, nuevo_y
 
 
@@ -113,7 +115,6 @@ def inputsTeclado(tablero, pieza, x, y, pausado):
     return x, y, pausado
 
 
-
 def moverIzq(tablero, pieza, x, y):
     '''ESTA FUNCION MUEVE LA PIEZA HACIA LA IZQUIERDA'''
     if x - 1 >= 0 and tablero[y][x - 1] == VACIO:
@@ -146,38 +147,40 @@ def pausa(pausado):
     pausado = not pausado
     while keyboard.is_pressed("p"):
         time.sleep(0.1)
-    
+     
     while pausado:
         if keyboard.is_pressed("p"):
             pausado = not pausado
 
             while keyboard.is_pressed("p"):
                 time.sleep(0.1)
-            break
         time.sleep(0.1)
     return pausado
 
 
-    
 def validarLogin():
+    '''ESTA FUNCION SE ENCARGA DE GENERAR UN SISTEMA DE LOGIN EL CUAL REQUIERE INTRODUCIR UNA CONTRASEÑA
+    CON AL MENOS UNA MAYUSCULA Y UN NUMERO PARA CONTINUAR CON EL PROGRAMA PRINCIPAL'''
+    clear()
     usuario = input("Ingresa tu nombre de usuario: ")
     patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
-    
-    while True:
+    banderaContrasena=True
+    while banderaContrasena:
         contrasena = input("Ingresa tu contraseña. Debe contener al menos una mayuscula y un numero: ")
         
         if search(patron, contrasena):
-            break
+            banderaContrasena=False
         else:
             print("Contraseña inválida. Debe contener al menos una mayúscula y un número")
 
 
 
 
-'''Esta función se encarga de finalizar el loop principal del juego una vez que una nueva pieza no pueda
-    ingresar en 20 filas inferiores de la matriz. También presenta una opcion para “volver a jugar'''  
     
 def finalizarJuego(tablero):
+    '''ESTA FUNCION SE ENCARGA DE FINALIZAR EL LOOP PRINCIPAL DEL JUEGO UNA VEZ QUE UNA NUEVA PIEZA NO PUEDA
+    INGRESAR EN LAS 20 FILAS INFERIORES DE LA MATRIZ'''
+ 
     for y in range(4):  
         for x in range(ANCHO):
             if tablero[y][x] != VACIO:  
@@ -209,7 +212,3 @@ main()
 # Funcion para crear piezas con sus formas
 # Funcion para que seleccione una pieza aleatoria
 # Funcion para rotar piezas
-# Funcion para que detecte en el tablero si una fila esta completa
-# Funcion para eliminar una fila 
-# Funcion para agregar una fila
-
