@@ -115,8 +115,8 @@ def seleccionarPieza():
     if tipo_pieza == "Z":
         color = Z
 
-    rotacion_inicial = random.choice(rotaciones)
-    
+    #rotacion_inicial = random.choice(rotaciones)
+    rotacion_inicial = rotaciones[0]
    
 
     return rotacion_inicial, tipo_pieza, color
