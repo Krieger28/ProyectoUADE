@@ -26,7 +26,15 @@ PIEZAS = {
            [I],
            [I]],
 
-          [[I, I, I, I]]],
+          [[I, I, I, I]],
+
+        #   [[I],
+        #    [I],
+        #    [I],
+        #    [I]],
+
+        #   [[I, I, I, I]]
+        ],
 
     "T": [[[VACIO, T, VACIO],
            [T, T, T]],
@@ -135,15 +143,38 @@ def borrarPieza(tablero, pieza, x, y):
             if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
                 tablero[y + i][x + j] = VACIO
 
-def rotarPieza(pieza_actual, tipo_pieza):
+
+
+
+
+def rotarPieza(tablero, pieza_actual, tipo_pieza, x, y):
+
     rotaciones = PIEZAS[tipo_pieza]
     indice_actual = rotaciones.index(pieza_actual)
-    return rotaciones[(indice_actual + 1) % len(rotaciones)]
+    pieza_rotada = rotaciones[(indice_actual + 1) % len(rotaciones)]
+    
+    # esto capas trae el bug de la pieza I que no se acuesta
+    ancho_pieza = len(pieza_rotada[0])
+    if x + ancho_pieza > ANCHO:
+        x = ANCHO - ancho_pieza
+    
+    # checkea si esta libre la nueva posicion al girarla, con esto adaptandolo capas se arrgla el tema de poner piezas encima de otras cuando vas a la izquierda o derecha
+    if all(
+        0 <= y + i < ALTO and 0 <= x + j < ANCHO and (tablero[y + i][x + j] == VACIO or pieza_rotada[i][j] == VACIO)
+        for i, fila in enumerate(pieza_rotada) for j, celda in enumerate(fila) if celda != VACIO
+    ):
+        return pieza_rotada, x, y  # Devuelve la nueva rotación y posición ajustada
+    else:
+        # Si la posición no está libre, no rota la pieza
+        return pieza_actual, x, y
+
+
+
 
 def inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color):
     if keyboard.is_pressed("up"):
         borrarPieza(tablero, pieza, x, y)
-        pieza = rotarPieza(pieza, tipo_pieza)
+        pieza, x, y = rotarPieza(tablero, pieza, tipo_pieza, x, y)
         colocarPieza(tablero, pieza, x, y, color)
     if keyboard.is_pressed("left"):
         x, y = moverIzq(tablero, pieza, x, y, color)
@@ -153,27 +184,57 @@ def inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color):
         pausado = pausa(pausado)
     return x, y, pausado, pieza, color
 
-def moverIzq(tablero, pieza, x, y, color):
- 
-    if x - 1 >= 0 and all(
-        tablero[y + i][x - 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == pieza
-        ):
-                borrarPieza(tablero, pieza, x, y)
-                x -= 1
-                colocarPieza(tablero, pieza, x, y, color)
-    return x, y 
 
+
+
+
+
+
+
+
+
+#ESTO FUNCIONA PARA GIRAR LAS PIEZAS, EDITANDOLO DE ALGUNA FORMA DEBERIA ANDAR PARA MOVERIZQ Y MOVERDER
+
+# if all(
+#         0 <= y + i < ALTO and 0 <= x + j < ANCHO and (tablero[y + i][x + j] == VACIO or pieza_rotada[i][j] == VACIO)
+#         for i, fila in enumerate(pieza_rotada) for j, celda in enumerate(fila) if celda != VACIO
+#     ):
+
+def moverIzq(tablero, pieza, x, y, color):
+    # Verifica si puede mover la pieza hacia la izquierda y la mueve
+    if x > 0 and all(
+        tablero[y + i][x - 1 + j] == VACIO
+        for i, fila in enumerate(pieza)
+        for j, celda in enumerate(fila)
+        if celda == pieza
+        # if celda != VACIO # con esto no choca contra las piezas ya puestras pero solo se mueve la pieza "I"
+    ):
+        borrarPieza(tablero, pieza, x, y)
+        x -= 1
+        colocarPieza(tablero, pieza, x, y, color)
+    return x, y
+# len(pieza)
 def moverDer(tablero, pieza, x, y, color):
-    if x + len(pieza) < ANCHO and all(
-        tablero[y + i][x + 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == pieza):
+    # Verifica si puede mover la pieza hacia la derecha y la nueve
+    if x + len(pieza[0]) < ANCHO and all(
+        tablero[y + i][x + j + 1] == VACIO
+        for i, fila in enumerate(pieza)
+        for j, celda in enumerate(fila)
+        # if celda != VACIO  # con esto no choca contra las piezas ya puestras pero solo se mueve la pieza "I"
+        if  celda == pieza
+    ):
         borrarPieza(tablero, pieza, x, y)
         x += 1
         colocarPieza(tablero, pieza, x, y, color)
     return x, y 
 
+
+
+
+
 def moverPiezaAbajo(tablero, pieza, x, y, color):
     # Verifica si hay espacio para mover la pieza hacia abajo
-    if y + len(pieza) < ALTO and all(
+    if y + len(pieza[0]) <= ALTO and all(
         tablero[y + 1 + i][x + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda != VACIO
     ):
         borrarPieza(tablero, pieza, x, y)
@@ -216,7 +277,8 @@ def crearFPS(tablero):
     pausado = False
     while True:
         pieza, tipo_pieza, color = seleccionarPieza()
-        x, y = ANCHO // 2, 0
+        # x, y = ANCHO // 2, 0
+        x, y = 4, 0
 
         if finalizarJuego(tablero):
             break
