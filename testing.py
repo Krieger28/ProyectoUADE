@@ -93,6 +93,9 @@ PIEZAS = {
            [Z, VACIO]]]
 }
 
+listaPiezas= list(PIEZAS.keys())
+
+
 def crearTablero():
     return [[VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
 
@@ -103,11 +106,53 @@ def imprimirTablero(tablero):
             print("|" + "".join(fila) + "|")
     print("+" + "--" * ANCHO + "+")
 
-def seleccionarPieza():
-    
-    tipo_pieza = random.choice(list(PIEZAS.keys()))
+
+def crearFPS(tablero):
+    pausado = False
+    while True:
+        pieza, tipo_pieza, color = seleccionarPieza()
+        # x, y = ANCHO // 2, 0
+        x, y = 4, 0
+
+        if finalizarJuego(tablero):
+            break
+
+        while True:
+            x, y, pausado, pieza, color = inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color)
+            if pausado:
+                time.sleep(0.1)
+                continue
+
+            # Control de movimiento hacia abajo
+            time.sleep(0.05)  # Ajusta la velocidad de caída de la pieza
+            clear()
+            imprimirTablero(tablero)
+            borrarPieza(tablero, pieza, x, y)
+
+            # Verificar si puede avanzar, y mover hacia abajo
+            if puedeAvanzar(tablero, pieza, x, y):
+                x, y = moverPiezaAbajo(tablero, pieza, x, y, color)
+            else:
+                colocarPieza(tablero, pieza, x, y, color)
+                filaCompleta(tablero)
+                break
+
+            colocarPieza(tablero, pieza, x, y, color)
+
+
+def seleccionarPieza():    
+    global listaPiezas
+    posicion_aleatoria = random.randint(0, len(listaPiezas)-1) 
+    #tipo_pieza = random.choice(piezas)
+    tipo_pieza = listaPiezas[posicion_aleatoria] 
     rotaciones = PIEZAS[tipo_pieza]
-    print(tipo_pieza)
+    rotacion_inicial = rotaciones[0]
+
+    listaPiezas.pop(posicion_aleatoria)
+    
+    if len(listaPiezas)==0:
+        listaPiezas= list(PIEZAS.keys())
+    
     if tipo_pieza == "I":
         color = I
     if tipo_pieza == "T":
@@ -123,8 +168,7 @@ def seleccionarPieza():
     if tipo_pieza == "Z":
         color = Z
 
-    #rotacion_inicial = random.choice(rotaciones)
-    rotacion_inicial = rotaciones[0]
+  
    
 
     return rotacion_inicial, tipo_pieza, color
@@ -273,37 +317,6 @@ def finalizarJuego(tablero):
 
 
 
-def crearFPS(tablero):
-    pausado = False
-    while True:
-        pieza, tipo_pieza, color = seleccionarPieza()
-        # x, y = ANCHO // 2, 0
-        x, y = 4, 0
-
-        if finalizarJuego(tablero):
-            break
-
-        while True:
-            x, y, pausado, pieza, color = inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color)
-            if pausado:
-                time.sleep(0.1)
-                continue
-
-            # Control de movimiento hacia abajo
-            time.sleep(0.1)  # Ajusta la velocidad de caída de la pieza
-            clear()
-            imprimirTablero(tablero)
-            borrarPieza(tablero, pieza, x, y)
-
-            # Verificar si puede avanzar, y mover hacia abajo
-            if puedeAvanzar(tablero, pieza, x, y):
-                x, y = moverPiezaAbajo(tablero, pieza, x, y, color)
-            else:
-                colocarPieza(tablero, pieza, x, y, color)
-                filaCompleta(tablero)
-                break
-
-            colocarPieza(tablero, pieza, x, y, color)
 
 
 
