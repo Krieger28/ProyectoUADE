@@ -145,35 +145,36 @@ def inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color):
         borrarPieza(tablero, pieza, x, y)
         pieza = rotarPieza(pieza, tipo_pieza)
         colocarPieza(tablero, pieza, x, y, color)
-    # if keyboard.is_pressed("left"):
-    #     x, y = moverIzq(tablero, pieza, x, y, color)
-    # elif keyboard.is_pressed("right"):
-    #     x, y = moverDer(tablero, pieza, x, y, color)
+    if keyboard.is_pressed("left"):
+        x, y = moverIzq(tablero, pieza, x, y, color)
+    elif keyboard.is_pressed("right"):
+        x, y = moverDer(tablero, pieza, x, y, color)
     if keyboard.is_pressed("p"):
         pausado = pausa(pausado)
     return x, y, pausado, pieza, color
 
-# def moverIzq(tablero, pieza, x, y, color):
-#     if x - 1 >= 0 and all(tablero[y + i][x - 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == PIEZA):
-#         borrarPieza(tablero, pieza, x, y)
-#         x -= 1
-#         colocarPieza(tablero, pieza, x, y, color)
-#     return x, y 
+def moverIzq(tablero, pieza, x, y, color):
+ 
+    if x - 1 >= 0 and all(
+        tablero[y + i][x - 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == pieza
+        ):
+                borrarPieza(tablero, pieza, x, y)
+                x -= 1
+                colocarPieza(tablero, pieza, x, y, color)
+    return x, y 
 
-# def moverDer(tablero, pieza, x, y, color):
-#     if x + len(pieza[0]) < ANCHO and all(tablero[y + i][x + 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == PIEZA):
-#         borrarPieza(tablero, pieza, x, y)
-#         x += 1
-#         colocarPieza(tablero, pieza, x, y, color)
-#     return x, y 
+def moverDer(tablero, pieza, x, y, color):
+    if x + len(pieza) < ANCHO and all(
+        tablero[y + i][x + 1 + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda == pieza):
+        borrarPieza(tablero, pieza, x, y)
+        x += 1
+        colocarPieza(tablero, pieza, x, y, color)
+    return x, y 
 
 def moverPiezaAbajo(tablero, pieza, x, y, color):
     # Verifica si hay espacio para mover la pieza hacia abajo
     if y + len(pieza) < ALTO and all(
-        tablero[y + 1 + i][x + j] == VACIO 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO
+        tablero[y + 1 + i][x + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda != VACIO
     ):
         borrarPieza(tablero, pieza, x, y)
         y += 1
