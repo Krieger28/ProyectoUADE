@@ -21,12 +21,13 @@ PIEZAS = {
     "O": [[[O, O],
            [O, O]]],
 
-    "I": [[[I],
+    "I": [[[I, I, I, I]],
+          
+          [[I],
            [I],
            [I],
            [I]],
 
-          [[I, I, I, I]],
 
         #   [[I],
         #    [I],
@@ -50,7 +51,10 @@ PIEZAS = {
            [T, T],
            [VACIO, T]]],
            
-    "L": [[[L, VACIO],
+    "L": [[[VACIO, VACIO, L],
+           [L, L, L]],
+           
+           [[L, VACIO],
            [L, VACIO],
            [L, L]],
 
@@ -59,15 +63,11 @@ PIEZAS = {
 
           [[L, L],
            [VACIO, L],
-           [VACIO, L]],
+           [VACIO, L]]
 
-          [[VACIO, VACIO, L],
-           [L, L, L]]],
+          ],
            
-    "J": [[[VACIO, J],
-           [VACIO, J],
-           [J, J]],
-
+    "J": [
           [[J, VACIO, VACIO],
            [J, J, J]],
 
@@ -76,7 +76,11 @@ PIEZAS = {
            [J, VACIO]],
 
           [[J, J, J],
-           [VACIO, VACIO, J]]],
+           [VACIO, VACIO, J]],
+
+           [[VACIO, J],
+           [VACIO, J],
+           [J, J]]],
 
     "S": [[[VACIO, S, S],
            [S, S, VACIO]],
@@ -97,27 +101,31 @@ listaPiezas= list(PIEZAS.keys())
 
 
 def crearTablero():
+    '''ESTA FUNCION GENERA UN TABLERO DE 10 COLUMNAS POR 24 FILAS'''
     return [[VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
 
 def imprimirTablero(tablero):
+    '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
     print("+" + "--" * ANCHO + "+")
     for i, fila in enumerate(tablero):
-        if i >= 0:  # Evita imprimir las primeras 4 filas
+        if i >= 4:  # Evita imprimir las primeras 4 filas
             print("|" + "".join(fila) + "|")
     print("+" + "--" * ANCHO + "+")
 
 
 def crearFPS(tablero):
+    '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO CONTROLADO QUE CORRE EL PROGRAMA'''
     pausado = False
-    while True:
+    banderaPasadas=True
+    while banderaPasadas:
         pieza, tipo_pieza, color = seleccionarPieza()
-        # x, y = ANCHO // 2, 0
-        x, y = 4, 0
+        
+        x, y = 3, 0
 
         if finalizarJuego(tablero):
-            break
-
-        while True:
+            banderaPasadas=False
+        banderaFPS = True
+        while banderaFPS:
             x, y, pausado, pieza, color = inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color)
             if pausado:
                 time.sleep(0.1)
@@ -135,12 +143,13 @@ def crearFPS(tablero):
             else:
                 colocarPieza(tablero, pieza, x, y, color)
                 filaCompleta(tablero)
-                break
+                banderaFPS=False
 
-            colocarPieza(tablero, pieza, x, y, color)
+            #colocarPieza(tablero, pieza, x, y, color)
 
 
-def seleccionarPieza():    
+def seleccionarPieza():
+    '''ESTA FUNCION SE ENCARGA DE SELECCIONAR UNA PIEZA ALEATORIA Y CICLARLAS DE UNA FORMA DETERMINADA'''
     global listaPiezas
     posicion_aleatoria = random.randint(0, len(listaPiezas)-1) 
     #tipo_pieza = random.choice(piezas)
@@ -168,25 +177,57 @@ def seleccionarPieza():
     if tipo_pieza == "Z":
         color = Z
 
-  
-   
-
     return rotacion_inicial, tipo_pieza, color
 
-def colocarPieza(tablero, pieza, x, y, color):
-
-    for i, fila in enumerate(pieza):
+def puedeAvanzar(tablero, pieza, x, y):
+    '''ESTA FUNCION VERIFICA SI HAY ESPACIO PARA MOVER LA PIEZA HACIA ABAJO'''
+    return y + len(pieza) < ALTO and all(
+        tablero[y + 1 + i][x + j] == VACIO 
+        for i, fila in enumerate(pieza) 
+        for j, celda in enumerate(fila) 
+        if celda != VACIO
+    )
+    # Distinta forma de hacer lo mismo
+    """
+    if y + len(pieza) >= ALTO:
+        return False
+    
+    for i, fila in enumerate(pieza): 
         for j, celda in enumerate(fila):
-            if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
-            
-                tablero[y + i][x + j] = color
+            if celda != VACIO:
+                if tablero[y + 1 + i][x + j] != VACIO:
+                    return False
+    return True
+    """
+
+def moverPiezaAbajo(tablero, pieza, x, y, color):
+    '''ESTA FUNCION MUEVE LA PIEZA UNA POSICION HACIA ABAJO'''
+    borrarPieza(tablero, pieza, x, y)
+    y += 1
+    colocarPieza(tablero, pieza, x, y, color)
+    return x, y
 
 def borrarPieza(tablero, pieza, x, y):
+    '''ESTA FUNCION ELIMINA PIEZAS DEL TABLERO'''
     for i, fila in enumerate(pieza):
         for j, celda in enumerate(fila):
             if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
                 tablero[y + i][x + j] = VACIO
 
+def colocarPieza(tablero, pieza, x, y, color):
+    '''ESTA FUNCION COLOCA PIEZAS EN EL TABLERO'''
+    for i, fila in enumerate(pieza):
+        for j, celda in enumerate(fila):
+            if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
+                tablero[y + i][x + j] = color
+
+def filaCompleta(tablero):
+    '''ESTA FUNCION DETECTA SI UNA FILA ESTA COMPLETA, EN CASO DE HABER FILAS COMPLETAS, 
+    LAS ELIMINA Y AGREGA FILIAS NUEVAS EN LA PARTE ALTA DEL TABLERO'''
+    for y in range(ALTO):
+        if all(celda != VACIO for celda in tablero[y]):
+            del tablero[y]
+            tablero.insert(0, [VACIO for _ in range(ANCHO)])
 
 
 
@@ -276,15 +317,7 @@ def moverDer(tablero, pieza, x, y, color):
 
 
 
-def moverPiezaAbajo(tablero, pieza, x, y, color):
-    # Verifica si hay espacio para mover la pieza hacia abajo
-    if y + len(pieza[0]) <= ALTO and all(
-        tablero[y + 1 + i][x + j] == VACIO for i, fila in enumerate(pieza) for j, celda in enumerate(fila) if celda != VACIO
-    ):
-        borrarPieza(tablero, pieza, x, y)
-        y += 1
-        colocarPieza(tablero, pieza, x, y, color)
-    return x, y
+
 
 
 
@@ -301,11 +334,7 @@ def pausa(pausado):
         time.sleep(0.1)
     return pausado
 
-def filaCompleta(tablero):
-    for y in range(ALTO):
-        if all(celda != VACIO for celda in tablero[y]):
-            del tablero[y]
-            tablero.insert(0, [VACIO for _ in range(ANCHO)])
+
 
 def finalizarJuego(tablero):
     for y in range(4):
@@ -320,14 +349,6 @@ def finalizarJuego(tablero):
 
 
 
-def puedeAvanzar(tablero, pieza, x, y):
-    # Verifica si la posición siguiente está libre para la pieza
-    return y + len(pieza) < ALTO and all(
-        tablero[y + 1 + i][x + j] == VACIO 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO
-    )
 
 
 def validarLogin():

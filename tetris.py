@@ -57,12 +57,19 @@ def crearFPS (tablero):
 
 
 '''ESTA FUNCION DETECTA SI LA PIEZA PUEDE AVANZAR O SI HIZO TOPE'''
-puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
+#puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
 
+def puedeAvanzar(nuevo_y,tablero,nuevo_x):
+    '''ESTA FUNCION DETECTA SI LA PIEZA PUEDE AVANZAR O SI HIZO TOPE'''
+    if nuevo_y== ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO):
+        return False
+    else:
+        return True
 
 def eliminarFila(tablero, y):
     '''ESTA FUNCION SE ENCARGA DE ELIMINAR LA FILA INDICADA'''
     del tablero[tablero.index(y)]
+    
 
 
 def agregarFila(tablero):
