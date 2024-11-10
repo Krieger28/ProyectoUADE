@@ -248,20 +248,35 @@ def filaCompleta(tablero):
             tablero.insert(0, [VACIO for _ in range(ANCHO)])
 
 
+bandera_rotar = True
+bandera_caida = True
 def inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color):
     '''ESTA FUNCION PERMITE QUE EL SISTEMA DETECTE LOS IMPUTS DEL USUARIO'''
+    global bandera_rotar, bandera_caida
     if keyboard.is_pressed("up"):
-        borrarPieza(tablero, pieza, x, y)
-        pieza, x, y = rotarPieza(tablero, pieza, tipo_pieza, x, y)
-        colocarPieza(tablero, pieza, x, y, color)
+        if bandera_rotar:
+            borrarPieza(tablero, pieza, x, y)
+            pieza, x, y = rotarPieza(tablero, pieza, tipo_pieza, x, y)
+            colocarPieza(tablero, pieza, x, y, color)
+            bandera_rotar = False
+    else:
+        bandera_rotar = True
     if keyboard.is_pressed("left"):
         borrarPieza(tablero, pieza, x, y)
-        x, y = moverIzq(tablero, pieza, x, y, color)
+        x, y = moverIzq(tablero, pieza, x, y)
         colocarPieza(tablero, pieza, x, y, color)
     if keyboard.is_pressed("right"):
         borrarPieza(tablero, pieza, x, y)
-        x, y = moverDer(tablero, pieza, x, y, color)
+        x, y = moverDer(tablero, pieza, x, y)
         colocarPieza(tablero, pieza, x, y, color)
+    if keyboard.is_pressed("space"):
+        if bandera_caida:
+            borrarPieza(tablero, pieza, x, y)
+            x, y = forzarCaida(tablero, pieza, x, y)
+            colocarPieza(tablero, pieza, x, y, color)
+            bandera_caida = False
+    else:
+        bandera_caida = True
     if keyboard.is_pressed("p"):
         pausado = pausa(pausado)
     return x, y, pausado, pieza, color
@@ -288,7 +303,7 @@ def rotarPieza(tablero, pieza_actual, tipo_pieza, x, y):
         # Si la posición no está libre, no rota la pieza
         return pieza_actual, x, y
 
-def moverIzq(tablero, pieza, x, y, color):
+def moverIzq(tablero, pieza, x, y):
     # Verifica si puede mover la pieza hacia la izquierda y la mueve
     if all(
         x > 0 and (tablero[y + i][x - 1 + j] == VACIO or pieza[i][j] == VACIO) 
@@ -299,7 +314,7 @@ def moverIzq(tablero, pieza, x, y, color):
         x -= 1
     return x, y
 
-def moverDer(tablero, pieza, x, y, color):
+def moverDer(tablero, pieza, x, y):
     # Verifica si puede mover la pieza hacia la derecha y la nueve
     if all(
         x + len(pieza[0]) < ANCHO and (tablero[y + i][x + j + 1] == VACIO or pieza[i][j] == VACIO) 
@@ -310,6 +325,16 @@ def moverDer(tablero, pieza, x, y, color):
         x += 1
     return x, y
 
+def forzarCaida(tablero, pieza, x, y):
+    '''FUEZA LA CAIDA DE LA PIEZA HACIA EL FONDO DEL TABLERO'''
+    while y + len(pieza) < ALTO and all(
+        tablero[y + 1 + i][x + j] == VACIO 
+        for i, fila in enumerate(pieza) 
+        for j, celda in enumerate(fila) 
+        if celda != VACIO
+    ):
+        y += 1
+    return x, y
 
 def pausa(pausado): 
     '''ESTA FUNCION PAUSA EL JUEGO'''
