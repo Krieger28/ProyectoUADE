@@ -16,7 +16,7 @@ VACIO = "⬛"
 ALTO = 24
 ANCHO = 10
 
-# Definir las piezas con sus rotaciones
+# Define las piezas con sus rotaciones
 PIEZAS = {
     "O": [[[O, O],
            [O, O]]],
