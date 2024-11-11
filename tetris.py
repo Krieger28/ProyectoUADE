@@ -17,6 +17,10 @@ VACIO = "⬛"
 ALTO = 24
 ANCHO = 10
 
+DISPLAY_ANCHO = 6
+DISPLAY_ALTO = 4
+
+
 # Definir las piezas con sus rotaciones
 PIEZAS = {
     "O": [[[O, O],
@@ -101,7 +105,7 @@ PIEZAS = {
 listaPiezas= list(PIEZAS.keys())
 
 
-
+prox_Pieza = []
 puntaje = 0
 lineas_Totales = 0
 nivel = 1
@@ -125,30 +129,106 @@ def crearTablero():
     '''ESTA FUNCION GENERA UN TABLERO DE 10 COLUMNAS POR 24 FILAS'''
     return [[VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
 
-def imprimirTablero(tablero):
-    '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
-    print("+" + "--" * ANCHO + "+")
-    for i, fila in enumerate(tablero):
-        if i >= 4:  # Evita imprimir las primeras 4 filas
-            print("|" + "".join(fila) + "|")
-    print("+" + "--" * ANCHO + "+")
-    print(f"NIVEL: {nivel}") 
-    print(f"PUNTOS: {puntaje}")
+def CrearProxPiezaDisplay():
+    '''ESTA FUNCION GENERA UN TABLERO DE 6 COLUMNAS POR 6 FILAS'''
+    global DISPLAY_ANCHO
+    global DISPLAY_ALTO
+    return [[VACIO for _ in range(DISPLAY_ANCHO)] for _ in range(DISPLAY_ALTO)]
 
 
-def crearFPS(tablero):
+
+
+# # # # def actualizar_Prox_Pieza(piezaDisplay, prox_Pieza, ):
+# # # #     for i, fila in enumerate(prox_Pieza):
+# # # #         for j, celda in enumerate(fila):
+# # # #             if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
+# # # #                 piezaDisplay[y + i][x + j] = color
+    
+
+# def imprimirTablero(tablero, piezaDisplay):
+#     '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
+    
+#     print("+" + "--" * ANCHO + "+" + "   " + "+" + "--" * DISPLAY_ANCHO + "+")
+#     for i, fila in enumerate(tablero) :
+#         for j, miniFila in enumerate(piezaDisplay):
+#             if i >= 4:  # Evita imprimir las primeras 4 filas
+#                 if i <= 10:
+                    
+#                         print("|" + "".join(fila) + "|" + "   " + "|" + "".join(miniFila) + "|")
+#                 else:
+#                     if i == 10:
+#                         print("+" + "--" * miniFila + "+")
+#                     print("|" + "".join(fila) + "|")
+            
+#     print("+" + "--" * ANCHO + "+")
+#     print(f"NIVEL: {nivel}") 
+#     print(f"PUNTOS: {puntaje}")
+
+
+
+def imprimirTablero(tablero, piezaDisplay):
+    '''Imprime el tablero principal de 20 filas y a la derecha un tablero pequeño de 4 filas.'''
+
+
+    
+    print("+" + "--" * ANCHO + "+" + "   " + "+" + "--" * DISPLAY_ANCHO + "+")
+    
+    for i in range(20): 
+    
+        fila_principal = "|" + "".join(tablero[i + 4]) + "|"
+        
+        if i < DISPLAY_ALTO:
+            fila_pieza_display = "|" + "".join(piezaDisplay[i]) + "|"
+        else:
+            if i == DISPLAY_ALTO:
+                fila_pieza_display =  "+" + "--" * DISPLAY_ANCHO + "+"
+            else:
+                if i == DISPLAY_ALTO + 4:
+                    fila_pieza_display =  f"NIVEL: {nivel}"
+                else:
+                    if i == DISPLAY_ALTO + 6:
+                        fila_pieza_display =  f"PUNTOS: {puntaje}"
+                    else:
+                        fila_pieza_display = " " * (DISPLAY_ANCHO * 2 + 2)
+
+
+        print(fila_principal + "   " + fila_pieza_display)
+
+
+    print("+" + "--" * ANCHO + "+")
+    
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def crearFPS(tablero, piezaDisplay):
     '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO CONTROLADO QUE CORRE EL PROGRAMA'''
     pausado = False
     banderaPasadas=True
 
+    global prox_Pieza
     global nivel
     global lineas_Totales
     global FPS_inicial
     while banderaPasadas:
+        x, y = 3, 0
         pieza, tipo_pieza, color = seleccionarPieza()
         
-        x, y = 3, 0
-
+        seleccionarProxPiezaYcolocar(piezaDisplay, color)
         if finalizarJuego(tablero):
             banderaPasadas=False
             #clear()
@@ -170,7 +250,7 @@ def crearFPS(tablero):
             time.sleep(FPS_inicial)  # Ajusta la velocidad de caída de la pieza
             clear()
             
-            imprimirTablero(tablero)
+            imprimirTablero(tablero, piezaDisplay)
             borrarPieza(tablero, pieza, x, y)
 
             # Verificar si puede avanzar, y mover hacia abajo
@@ -180,8 +260,6 @@ def crearFPS(tablero):
                 colocarPieza(tablero, pieza, x, y, color)
                 actualizarPuntaje(filaCompleta(tablero))
                 banderaFPS=False
-
-            #colocarPieza(tablero, pieza, x, y, color)
 
 
 
@@ -215,19 +293,31 @@ def Niveles():
 
 
 
+def Randomizar_Lista(prevPiezas):
+    global listaPiezas
+    randomlistas = list(PIEZAS.keys())
+    
+    random.shuffle(randomlistas) 
+    
+    listaPiezas = randomlistas + prevPiezas 
+
+
+
 def seleccionarPieza():
     '''ESTA FUNCION SE ENCARGA DE SELECCIONAR UNA PIEZA ALEATORIA Y CICLARLAS DE UNA FORMA DETERMINADA'''
     global listaPiezas
-    posicion_aleatoria = random.randint(0, len(listaPiezas)-1) 
-    #tipo_pieza = random.choice(piezas)
-    tipo_pieza = listaPiezas[posicion_aleatoria] 
+
+
+    tipo_pieza = listaPiezas[ len(listaPiezas)-1] 
     rotaciones = PIEZAS[tipo_pieza]
     rotacion_inicial = rotaciones[0]
 
-    listaPiezas.pop(posicion_aleatoria)
+    listaPiezas.pop(len(listaPiezas)-1)
     
-    if len(listaPiezas)==0:
-        listaPiezas= list(PIEZAS.keys())
+    if len(listaPiezas)==1:
+        Randomizar_Lista(listaPiezas)
+    
+    
     
     if tipo_pieza == "I":
         color = I
@@ -243,8 +333,68 @@ def seleccionarPieza():
         color = S
     if tipo_pieza == "Z":
         color = Z
+    
+
+
+    
+
+
 
     return rotacion_inicial, tipo_pieza, color
+
+
+
+
+def seleccionarProxPiezaYcolocar(piezaDisplay, color):
+    '''ESTA FUNCION SE ENCARGA DE SELECCIONAR UNA PIEZA ALEATORIA Y CICLARLAS DE UNA FORMA DETERMINADA'''
+    global listaPiezas
+    global prox_Pieza
+
+
+    for i in range(DISPLAY_ALTO):
+        for j in range(DISPLAY_ANCHO):
+            piezaDisplay[i][j] = VACIO
+
+
+    tipo_pieza = listaPiezas[-1]  # Selecciona la última pieza en la lista
+    rotaciones = PIEZAS[tipo_pieza]
+    prox_Pieza = rotaciones[0]  # Selecciona la primera rotación de la próxima pieza
+
+
+
+
+
+    if tipo_pieza == "I":
+        color = I
+    if tipo_pieza == "T":
+        color = T
+    if tipo_pieza == "L":
+        color = L
+    if tipo_pieza == "J":
+        color = J
+    if tipo_pieza == "O":
+        color = O
+    if tipo_pieza == "S":
+        color = S
+    if tipo_pieza == "Z":
+        color = Z
+
+
+
+    for i, fila in enumerate(prox_Pieza):
+        for j, celda in enumerate(fila):
+            if celda != VACIO:
+                piezaDisplay[i +1][j + (DISPLAY_ANCHO - len(fila)) // 2] = color
+
+    
+
+
+    
+
+
+
+
+
 
 
 def moverPiezaAbajo(tablero, pieza, x, y, color):
@@ -430,8 +580,9 @@ def finalizarJuego(tablero):
 def main():
     '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
     # validarLogin()
+    piezaDisplay = CrearProxPiezaDisplay()
     tablero = crearTablero()
-    crearFPS(tablero)
+    crearFPS(tablero, piezaDisplay)
 
 
 main()
