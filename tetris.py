@@ -4,6 +4,7 @@ import time
 import os
 import random
 from re import search
+import json
 
 clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 O = "🟨"
@@ -112,19 +113,78 @@ lineas_Totales = 0
 nivel = 1
 FPS_inicial = 0.3
 
-def validarLogin():
-    '''ESTA FUNCION SE ENCARGA DE GENERAR UN SISTEMA DE LOGIN EL CUAL REQUIERE INTRODUCIR UNA CONTRASEÑA
-    CON AL MENOS UNA MAYUSCULA Y UN NUMERO PARA CONTINUAR CON EL PROGRAMA PRINCIPAL'''
+def cargarUsuarios():
+    if os.path.exists("usuarios.json"):
+        with open("usuarios.json", "r") as archivo:
+            return json.load(archivo)
+    else:
+        return {}
+
+# Funcion para guardar los usuarios en un archivo JSON
+def guardarUsuarios(usuarios):
+    with open("usuarios.json", "w") as archivo:
+        json.dump(usuarios, archivo, indent=4)
+
+# Funcion para registrar un nuevo usuario
+def registrarUsuario():
     clear()
+    print("Registrarse")
     usuario = input("Ingresa tu nombre de usuario: ")
+    while usuario in cargarUsuarios():
+        print("El nombre de usuario ya existe. Intenta otro.")
+        usuario = input("Ingresa tu nombre de usuario: ")
     patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
     banderaContrasena= True
     while banderaContrasena:
-        contrasena = input("Ingresa tu contraseña. Debe contener al menos una mayúscula y un número: ")
+        contrasena = input("Ingresa tu contraseña (Debe contener al menos una mayuscula y un numero): ")
         if search(patron, contrasena):
-            banderaContrasena=False
+            banderaContrasena= False
         else:
-            print("Contraseña inválida. Debe contener al menos una mayúscula y un número")
+            print("Contraseña invalida. Debe contener al menos una mayuscula y un numero.")
+    usuarios = cargarUsuarios()
+    usuarios[usuario] = {"contrasena": contrasena, "puntajes": []}
+    guardarUsuarios(usuarios)
+    return usuario
+
+# Funcion para iniciar sesion con un usuario existente
+def iniciarSesion():
+    clear()
+    print("Iniciar sesion")
+    
+    banderaUsuario = True
+    while banderaUsuario:
+        usuario = input("Ingresa tu nombre de usuario: ")
+        usuarios = cargarUsuarios()
+        if usuario in usuarios:
+            banderaUsuario = False
+        else:
+            print("El usuario no existe. Intenta nuevamente.")
+    
+    banderaContrasena = True
+    while banderaContrasena:
+        contrasena = input("Ingresa tu contraseña: ")
+        if contrasena == usuarios[usuario]["contrasena"]:
+            banderaContrasena = False
+        else:
+            print("Contraseña incorrecta. Ingresela nuevamente.")
+    
+    return usuario
+
+
+# Funcion para guardar el puntaje del usuario
+def guardarPuntaje(usuario, puntaje):
+    usuarios = cargarUsuarios()
+    usuarios[usuario]["puntajes"].append(puntaje)
+    guardarUsuarios(usuarios)
+
+
+# Funcion para mostrar los tres mejores puntajes de un usuario
+def mostrarMejoresPuntajes(usuario):
+    usuarios = cargarUsuarios()
+    puntajes = sorted(usuarios[usuario]["puntajes"], reverse=True)
+    print(f"{usuario} - Mejores puntajes:")
+    for i, puntaje in enumerate(puntajes[:3]):
+        print(f"{i + 1}) {puntaje}")
 
 def crearTablero():
     '''ESTA FUNCION GENERA UN TABLERO DE 10 COLUMNAS POR 24 FILAS'''
@@ -552,10 +612,22 @@ def finalizarJuego(tablero):
 
 def main():
     '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
-    # validarLogin()
+    print("Bienvenido a Tetris!")
+    banderaBienvenida=True
+    while banderaBienvenida:
+        opcion = input("¿Tienes cuenta? (s/n): ")
+        if opcion.lower() == "n":
+            usuario = registrarUsuario()
+            banderaBienvenida=False
+        if opcion.lower() == "s":
+            usuario = iniciarSesion()
+            banderaBienvenida=False
+        else:
+            print("Opcion invalida. Introduzca una opocion vailda")        
     piezaDisplay = CrearProxPiezaDisplay()
     tablero = crearTablero()
     crearFPS(tablero, piezaDisplay)
-
+    guardarPuntaje(usuario, puntaje)
+    mostrarMejoresPuntajes(usuario)
 
 main()
