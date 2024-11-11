@@ -138,34 +138,6 @@ def CrearProxPiezaDisplay():
 
 
 
-# # # # def actualizar_Prox_Pieza(piezaDisplay, prox_Pieza, ):
-# # # #     for i, fila in enumerate(prox_Pieza):
-# # # #         for j, celda in enumerate(fila):
-# # # #             if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
-# # # #                 piezaDisplay[y + i][x + j] = color
-    
-
-# def imprimirTablero(tablero, piezaDisplay):
-#     '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
-    
-#     print("+" + "--" * ANCHO + "+" + "   " + "+" + "--" * DISPLAY_ANCHO + "+")
-#     for i, fila in enumerate(tablero) :
-#         for j, miniFila in enumerate(piezaDisplay):
-#             if i >= 4:  # Evita imprimir las primeras 4 filas
-#                 if i <= 10:
-                    
-#                         print("|" + "".join(fila) + "|" + "   " + "|" + "".join(miniFila) + "|")
-#                 else:
-#                     if i == 10:
-#                         print("+" + "--" * miniFila + "+")
-#                     print("|" + "".join(fila) + "|")
-            
-#     print("+" + "--" * ANCHO + "+")
-#     print(f"NIVEL: {nivel}") 
-#     print(f"PUNTOS: {puntaje}")
-
-
-
 def imprimirTablero(tablero, piezaDisplay):
     '''Imprime el tablero principal de 20 filas y a la derecha un tablero pequeño de 4 filas.'''
 
@@ -246,7 +218,7 @@ def crearFPS(tablero, piezaDisplay):
 
             # Control de movimiento hacia abajo
             
-            # time.sleep(0.1)
+           
             time.sleep(FPS_inicial)  # Ajusta la velocidad de caída de la pieza
             clear()
             
@@ -356,9 +328,9 @@ def seleccionarProxPiezaYcolocar(piezaDisplay, color):
             piezaDisplay[i][j] = VACIO
 
 
-    tipo_pieza = listaPiezas[-1]  # Selecciona la última pieza en la lista
+    tipo_pieza = listaPiezas[-1] 
     rotaciones = PIEZAS[tipo_pieza]
-    prox_Pieza = rotaciones[0]  # Selecciona la primera rotación de la próxima pieza
+    prox_Pieza = rotaciones[0] 
 
 
 
