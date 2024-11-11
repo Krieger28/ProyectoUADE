@@ -103,6 +103,7 @@ PIEZAS = {
 }
 
 listaPiezas= list(PIEZAS.keys())
+random.shuffle(listaPiezas)
 
 
 prox_Pieza = []
