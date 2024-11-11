@@ -4,336 +4,149 @@ import os
 import random
 from re import search
 
-clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
-O = "🟨"
-I = "🟦"
-T = "🟪"
-L = "🟧"
-J = "🟫"
-S = "🟥"
-Z = "🟩"
+
+clear = lambda: os.system('cls')
+PIEZA = "🟨"
 VACIO = "⬛"
 ALTO = 24
 ANCHO = 10
 
-# Define las piezas con sus rotaciones
-PIEZAS = {
-    "O": [[[O, O],
-           [O, O]]],
-
-    "I": [[[I, I, I, I]],
-          
-          [[I],
-           [I],
-           [I],
-           [I]],
-
-
-        #   [[I],
-        #    [I],
-        #    [I],
-        #    [I]],
-
-        #   [[I, I, I, I]]
-        ],
-
-    "T": [[[VACIO, T, VACIO],
-           [T, T, T]],
-
-          [[T, VACIO],
-           [T, T],
-           [T, VACIO]],
-
-          [[T, T, T],
-           [VACIO, T, VACIO]],
-
-          [[VACIO, T],
-           [T, T],
-           [VACIO, T]]],
-           
-    "L": [[[VACIO, VACIO, L],
-           [L, L, L]],
-           
-           [[L, VACIO],
-           [L, VACIO],
-           [L, L]],
-
-          [[L, L, L],
-           [L, VACIO, VACIO]],
-
-          [[L, L],
-           [VACIO, L],
-           [VACIO, L]]
-
-          ],
-           
-    "J": [
-          [[J, VACIO, VACIO],
-           [J, J, J]],
-
-          [[J, J],
-           [J, VACIO],
-           [J, VACIO]],
-
-          [[J, J, J],
-           [VACIO, VACIO, J]],
-
-           [[VACIO, J],
-           [VACIO, J],
-           [J, J]]],
-
-    "S": [[[VACIO, S, S],
-           [S, S, VACIO]],
-
-          [[S, VACIO],
-           [S, S],
-           [VACIO, S]]],
-
-    "Z": [[[Z, Z, VACIO],
-           [VACIO, Z, Z]],
-
-          [[VACIO, Z],
-           [Z, Z],
-           [Z, VACIO]]]
-}
-
-listaPiezas= list(PIEZAS.keys())
-
-def validarLogin():
-    '''ESTA FUNCION SE ENCARGA DE GENERAR UN SISTEMA DE LOGIN EL CUAL REQUIERE INTRODUCIR UNA CONTRASEÑA
-    CON AL MENOS UNA MAYUSCULA Y UN NUMERO PARA CONTINUAR CON EL PROGRAMA PRINCIPAL'''
-    clear()
-    usuario = input("Ingresa tu nombre de usuario: ")
-    patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
-    banderaContrasena= True
-    while banderaContrasena:
-        contrasena = input("Ingresa tu contraseña. Debe contener al menos una mayúscula y un número: ")
-        if search(patron, contrasena):
-            banderaContrasena=False
-        else:
-            print("Contraseña inválida. Debe contener al menos una mayúscula y un número")
 
 def crearTablero():
     '''ESTA FUNCION GENERA UN TABLERO DE 10 COLUMNAS POR 24 FILAS'''
-    return [[VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
+    return [[ VACIO for _ in range(ANCHO)] for _ in range(ALTO)]
+
 
 def imprimirTablero(tablero):
     '''ESTA FUNCION IMPRIME EL TABLERO GENERADO SIN IMPRIMIR LAS PRIMERAS 4 FILAS'''
-    print("+" + "--" * ANCHO + "+")
-    for i, fila in enumerate(tablero):
-        if i >= 0:  # Evita imprimir las primeras 4 filas
-            print("|" + "".join(fila) + "|")
-    print("+" + "--" * ANCHO + "+")
+    print("+" + "--" * ANCHO + "+") # Borde de arriba
 
+    aux=0
+    for fila in tablero:
+            if aux>=4: #No imprime las primeras 4 filas
+                print("|" + "".join(fila) + "|")  # Filas del tablero
+            aux+=1
+    
+    print("+" + "--" * ANCHO + "+") # Borde de abajo
+    
 
-def crearFPS(tablero):
-    '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO CONTROLADO QUE CORRE EL PROGRAMA'''
+def crearFPS (tablero):
+    '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO QUE CORRE EL PROGRAMA'''
     pausado = False
     banderaPasadas=True
-    while banderaPasadas:
-        pieza, tipo_pieza, color = seleccionarPieza()
-        
-        x, y = 3, 0
+    while banderaPasadas:  #  vincularlo  con un input del teclado esc o algo asi y el game over
+        x, y = ANCHO // 2, 0
 
         if finalizarJuego(tablero):
             banderaPasadas=False
-            #clear()
-            print("Juego terminado.")
-            continue
-
-        banderaFPS = True
+        banderaFPS=True
         while banderaFPS:
-            x, y, pausado, pieza, color = inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color)
+            x, y, pausado = inputsTeclado(tablero, PIEZA, x, y, pausado) # Actualiza el estado de pausa y piezas
             if pausado:
                 time.sleep(0.1)
                 continue
-
-            # Control de movimiento hacia abajo
-            time.sleep(0.1)  # Ajusta la velocidad de caída de la pieza
-            clear()
             
+            time.sleep(0.05)            
+            clear()
             imprimirTablero(tablero)
-            borrarPieza(tablero, pieza, x, y)
-
-            # Verificar si puede avanzar, y mover hacia abajo
-            if puedeAvanzar(tablero, pieza, x, y):
-                x, y = moverPiezaAbajo(tablero, pieza, x, y, color)
-            else:
-                colocarPieza(tablero, pieza, x, y, color)
+            nuevo_x, nuevo_y = moverPiezaAbajo(tablero, PIEZA, x, y)
+            if puedeAvanzar(nuevo_y,tablero,nuevo_x)==False:
                 filaCompleta(tablero)
-                banderaFPS=False
+                banderaFPS=False 
+            x, y = nuevo_x, nuevo_y
 
-            #colocarPieza(tablero, pieza, x, y, color)
 
+'''ESTA FUNCION DETECTA SI LA PIEZA PUEDE AVANZAR O SI HIZO TOPE'''
+#puedeAvanzar= lambda nuevo_y,tablero,nuevo_x: False if nuevo_y==ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO) else True
 
-def seleccionarPieza():
-    '''ESTA FUNCION SE ENCARGA DE SELECCIONAR UNA PIEZA ALEATORIA Y CICLARLAS DE UNA FORMA DETERMINADA'''
-    global listaPiezas
-    posicion_aleatoria = random.randint(0, len(listaPiezas)-1) 
-    #tipo_pieza = random.choice(piezas)
-    tipo_pieza = listaPiezas[posicion_aleatoria] 
-    rotaciones = PIEZAS[tipo_pieza]
-    rotacion_inicial = rotaciones[0]
-
-    listaPiezas.pop(posicion_aleatoria)
-    
-    if len(listaPiezas)==0:
-        listaPiezas= list(PIEZAS.keys())
-    
-    if tipo_pieza == "I":
-        color = I
-    if tipo_pieza == "T":
-        color = T
-    if tipo_pieza == "L":
-        color = L
-    if tipo_pieza == "J":
-        color = J
-    if tipo_pieza == "O":
-        color = O
-    if tipo_pieza == "S":
-        color = S
-    if tipo_pieza == "Z":
-        color = Z
-
-    return rotacion_inicial, tipo_pieza, color
-
-def puedeAvanzar(tablero, pieza, x, y):
-    '''ESTA FUNCION VERIFICA SI HAY ESPACIO PARA MOVER LA PIEZA HACIA ABAJO'''
-    return y + len(pieza) < ALTO and all(
-        tablero[y + 1 + i][x + j] == VACIO 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO
-    )
-    # Distinta forma de hacer lo mismo
-    """
-    if y + len(pieza) >= ALTO:
+def puedeAvanzar(nuevo_y,tablero,nuevo_x):
+    '''ESTA FUNCION DETECTA SI LA PIEZA PUEDE AVANZAR O SI HIZO TOPE'''
+    if nuevo_y== ALTO - 1 or (nuevo_y + 1 < ALTO and tablero[nuevo_y + 1][nuevo_x] != VACIO):
         return False
+    else:
+        return True
+
+def eliminarFila(tablero, y):
+    '''ESTA FUNCION SE ENCARGA DE ELIMINAR LA FILA INDICADA'''
+    del tablero[tablero.index(y)]
     
-    for i, fila in enumerate(pieza): 
-        for j, celda in enumerate(fila):
-            if celda != VACIO:
-                if tablero[y + 1 + i][x + j] != VACIO:
-                    return False
-    return True
-    """
 
-def moverPiezaAbajo(tablero, pieza, x, y, color):
-    '''ESTA FUNCION MUEVE LA PIEZA UNA POSICION HACIA ABAJO'''
-    borrarPieza(tablero, pieza, x, y)
-    y += 1
-    colocarPieza(tablero, pieza, x, y, color)
-    return x, y
 
-def borrarPieza(tablero, pieza, x, y):
-    '''ESTA FUNCION ELIMINA PIEZAS DEL TABLERO'''
-    for i, fila in enumerate(pieza):
-        for j, celda in enumerate(fila):
-            if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
-                tablero[y + i][x + j] = VACIO
+def agregarFila(tablero):
+    '''ESTA FUNCION AGREGA FILAS EN LA POSICION 0 DE LA MATRIZ'''
+    tablero.insert(0,[VACIO for _ in range(ANCHO)])    
 
-def colocarPieza(tablero, pieza, x, y, color):
-    '''ESTA FUNCION COLOCA PIEZAS EN EL TABLERO'''
-    for i, fila in enumerate(pieza):
-        for j, celda in enumerate(fila):
-            if celda != VACIO and 0 <= x + j < ANCHO and 0 <= y + i < ALTO:
-                tablero[y + i][x + j] = color
 
 def filaCompleta(tablero):
-    '''ESTA FUNCION DETECTA SI UNA FILA ESTA COMPLETA, EN CASO DE HABER FILAS COMPLETAS, 
-    LAS ELIMINA Y AGREGA FILIAS NUEVAS EN LA PARTE ALTA DEL TABLERO'''
-    for y in range(ALTO):
-        if all(celda != VACIO for celda in tablero[y]):
-            del tablero[y]
-            tablero.insert(0, [VACIO for _ in range(ANCHO)])
+    '''ESTA FUNCION DETECTA SI UNA FILA ESTA COMPLETA, EN CASO DE HABER FILAS COMPLETAS, LAS ELIMINA Y AGREGA FILIAS NUEVAS EN LA PARTE ALTA DEL TABLERO'''
+    for y in tablero:
+        aux=0
+        for x in y:
+            if x==PIEZA:
+                aux+=1
+        if aux==10:
+            eliminarFila(tablero,y)
+            agregarFila(tablero)
 
 
-bandera_rotar = True
-bandera_caida = True
-def inputsTeclado(tablero, pieza, x, y, pausado, tipo_pieza, color):
+def colocarPieza(tablero, pieza, x, y):
+    '''ESTA FUNCION COLOCA PIEZAS EN EL TABLERO'''
+    if 0 <= x < ANCHO and 0 <= y < ALTO:
+        tablero[y][x] = pieza
+
+
+def borrarPieza(tablero, x, y):
+    '''ESTA FUNCION ELIMINA PIEZAS DE POSICIONES ESPECIFICAS'''
+    if 0 <= x < ANCHO and 0 <= y < ALTO:
+        tablero[y][x] = VACIO
+
+
+def inputsTeclado(tablero, pieza, x, y, pausado):
     '''ESTA FUNCION PERMITE QUE EL SISTEMA DETECTE LOS IMPUTS DEL USUARIO'''
-    global bandera_rotar, bandera_caida
-    if keyboard.is_pressed("up"):
-        if bandera_rotar:
-            borrarPieza(tablero, pieza, x, y)
-            pieza, x, y = rotarPieza(tablero, pieza, tipo_pieza, x, y)
-            colocarPieza(tablero, pieza, x, y, color)
-            bandera_rotar = False
-    else:
-        bandera_rotar = True
-    if keyboard.is_pressed("left"):
-        borrarPieza(tablero, pieza, x, y)
-        x, y = moverIzq(tablero, pieza, x, y)
-        colocarPieza(tablero, pieza, x, y, color)
-    if keyboard.is_pressed("right"):
-        borrarPieza(tablero, pieza, x, y)
-        x, y = moverDer(tablero, pieza, x, y)
-        colocarPieza(tablero, pieza, x, y, color)
     if keyboard.is_pressed("space"):
-        if bandera_caida:
-            borrarPieza(tablero, pieza, x, y)
-            x, y = forzarCaida(tablero, pieza, x, y)
-            colocarPieza(tablero, pieza, x, y, color)
-            bandera_caida = False
-    else:
-        bandera_caida = True
+        pass  # bajar más rápido o insta ponerla en donde quedaría
+    if keyboard.is_pressed("down"):
+        pass  # bajar más rápido o insta ponerla en donde quedaría
+    if keyboard.is_pressed("up"):
+        pass  # girar pieza
+    if keyboard.is_pressed("left"):
+        x, y = moverIzq(tablero, pieza, x, y)
+    elif keyboard.is_pressed("right"):
+        x, y = moverDer(tablero, pieza, x, y)
+    
+    if keyboard.is_pressed("esc"):
+        pass  # cerrar juego, ver de aplicarlo al primer while???
+    
     if keyboard.is_pressed("p"):
-        pausado = pausa(pausado)
-    return x, y, pausado, pieza, color
+        pausado = pausa(pausado)  # pausar el juego
+    return x, y, pausado
 
-
-def rotarPieza(tablero, pieza_actual, tipo_pieza, x, y):
-    '''ESTA FUNCION SE ENCARGA DE COMPROBAR SI UNA PIEZA PUEDE ROTAR, EN CASO DE SER POSIBLE, LA ROTA'''
-    rotaciones = PIEZAS[tipo_pieza]
-    indice_actual = rotaciones.index(pieza_actual)
-    pieza_rotada = rotaciones[(indice_actual + 1) % len(rotaciones)]
-    
-    # Evita que la pieza se vaya de los margenes del tablero al rotarla
-    ancho_pieza = len(pieza_rotada[0])
-    if x + ancho_pieza > ANCHO:
-        x = ANCHO - ancho_pieza
-    
-    # checkea si esta libre la nueva posicion al girarla, con esto adaptandolo capas se arrgla el tema de poner piezas encima de otras cuando vas a la izquierda o derecha
-    if all(
-        0 <= y + i < ALTO and 0 <= x + j < ANCHO and (tablero[y + i][x + j] == VACIO or pieza_rotada[i][j] == VACIO)
-        for i, fila in enumerate(pieza_rotada) for j, celda in enumerate(fila) if celda != VACIO
-    ):
-        return pieza_rotada, x, y  # Devuelve la nueva rotación y posición ajustada
-    else:
-        # Si la posición no está libre, no rota la pieza
-        return pieza_actual, x, y
 
 def moverIzq(tablero, pieza, x, y):
-    # Verifica si puede mover la pieza hacia la izquierda y la mueve
-    if all(
-        x > 0 and (tablero[y + i][x - 1 + j] == VACIO or pieza[i][j] == VACIO) 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO    
-    ):
+    '''ESTA FUNCION MUEVE LA PIEZA HACIA LA IZQUIERDA'''
+    if x - 1 >= 0 and tablero[y][x - 1] == VACIO:
+        borrarPieza(tablero, x, y)
         x -= 1
-    return x, y
+        colocarPieza(tablero, pieza, x, y)
+    return x, y 
+
 
 def moverDer(tablero, pieza, x, y):
-    # Verifica si puede mover la pieza hacia la derecha y la nueve
-    if all(
-        x + len(pieza[0]) < ANCHO and (tablero[y + i][x + j + 1] == VACIO or pieza[i][j] == VACIO) 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO
-    ):
+    '''ESTA FUNCION MUEVE LA PIEZA HACIA LA DERECHA'''
+    if x + 1 < ANCHO and tablero[y][x + 1] == VACIO:
+        borrarPieza(tablero, x, y)
         x += 1
-    return x, y
+        colocarPieza(tablero, pieza, x, y)
+    return x, y 
 
-def forzarCaida(tablero, pieza, x, y):
-    '''FUEZA LA CAIDA DE LA PIEZA HACIA EL FONDO DEL TABLERO'''
-    while y + len(pieza) < ALTO and all(
-        tablero[y + 1 + i][x + j] == VACIO 
-        for i, fila in enumerate(pieza) 
-        for j, celda in enumerate(fila) 
-        if celda != VACIO
-    ):
+
+def moverPiezaAbajo(tablero, pieza, x, y):
+    '''ESTA FUNCION SIMULA LA CAIDA DE UNA PIEZA POR EL TABLERO'''
+    if y + 1 < ALTO and tablero[y + 1][x] == VACIO:
+        borrarPieza(tablero, x, y)
         y += 1
+        colocarPieza(tablero, pieza, x, y)
+        return x, y
     return x, y
 
 def pausa(pausado): 
@@ -341,32 +154,68 @@ def pausa(pausado):
     pausado = not pausado
     while keyboard.is_pressed("p"):
         time.sleep(0.1)
+     
     while pausado:
         if keyboard.is_pressed("p"):
             pausado = not pausado
+
             while keyboard.is_pressed("p"):
                 time.sleep(0.1)
         time.sleep(0.1)
     return pausado
 
+
+def validarLogin():
+    '''ESTA FUNCION SE ENCARGA DE GENERAR UN SISTEMA DE LOGIN EL CUAL REQUIERE INTRODUCIR UNA CONTRASEÑA
+    CON AL MENOS UNA MAYUSCULA Y UN NUMERO PARA CONTINUAR CON EL PROGRAMA PRINCIPAL'''
+    clear()
+    usuario = input("Ingresa tu nombre de usuario: ")
+    patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
+    banderaContrasena=True
+    while banderaContrasena:
+        contrasena = input("Ingresa tu contraseña. Debe contener al menos una mayuscula y un numero: ")
+        
+        if search(patron, contrasena):
+            banderaContrasena=False
+        else:
+            print("Contraseña inválida. Debe contener al menos una mayúscula y un número")
+
+
+
+
+    
 def finalizarJuego(tablero):
     '''ESTA FUNCION SE ENCARGA DE FINALIZAR EL LOOP PRINCIPAL DEL JUEGO UNA VEZ QUE UNA NUEVA PIEZA NO PUEDA
     INGRESAR EN LAS 20 FILAS INFERIORES DE LA MATRIZ'''
-    for y in range(4):
+ 
+    for y in range(4):  
         for x in range(ANCHO):
-            if tablero[y][x] != VACIO:
-                return True
-    return False
+            if tablero[y][x] != VACIO:  
+                print("Juego terminado.")
+                return True   
+    return False  
+ 
+    # Input para voler a jugar
+    
 
 
-
+def aumentarVel():
+    '''Esta función se encarga de aumentar la velocidad del juego a medida que se eliminen filas'''
 
 
 def main():
     '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
-    # validarLogin()
+    validarLogin()
     tablero = crearTablero()
-    crearFPS(tablero)
-
-
+    crearFPS (tablero)
 main()
+
+
+
+
+
+
+# Funcion para enviar la pieza al fondo del tablero
+# Funcion para crear piezas con sus formas
+# Funcion para que seleccione una pieza aleatoria
+# Funcion para rotar piezas
