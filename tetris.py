@@ -114,11 +114,14 @@ nivel = 1
 FPS_inicial = 0.3
 
 def cargarUsuarios():
-    if os.path.exists("usuarios.json"):
-        with open("usuarios.json", "r") as archivo:
-            return json.load(archivo)
-    else:
-        return {}
+    try:
+        if os.path.exists("usuarios.json"):
+            with open("usuarios.json", "r") as archivo:
+                return json.load(archivo)
+        else:
+            return {}
+    except KeyError:
+        return KeyError
 
 # Funcion para guardar los usuarios en un archivo JSON
 def guardarUsuarios(usuarios):
