@@ -251,6 +251,8 @@ def imprimirTablero(tablero, piezaDisplay):
 
 
 
+
+
 def crearFPS(tablero, piezaDisplay):
     '''ESTA FUNCION SE ENCARGA DE RENDEREAR LOS CAMBIOS A LA MATRIZ. SE TRATA DE UN BUCLE INFINITO CONTROLADO QUE CORRE EL PROGRAMA'''
     pausado = False
@@ -269,7 +271,7 @@ def crearFPS(tablero, piezaDisplay):
             banderaPasadas=False
             #clear()
             print("Juego terminado.")
-            break
+            continue
         
 
         Niveles()
@@ -613,6 +615,23 @@ def finalizarJuego(tablero):
 
 
 
+def jugardenuevo():
+    YoN = input("ingresa Y si queres jugar denuevo, sino N: ")
+    if YoN.strip() == "y" or YoN.strip() == "Y":
+        piezaDisplay = CrearProxPiezaDisplay()
+        tablero = crearTablero()
+        crearFPS(tablero, piezaDisplay)
+        return
+    else:
+        if YoN.strip() == "n" or YoN.strip() == "N":
+            return
+        else:
+            jugardenuevo()
+    
+
+
+
+
 def main():
     '''ESTA FUNCION SE ENCARGA DE EJECUTAR EL PROYECTO'''
     print("Bienvenido a Tetris!")
@@ -632,5 +651,6 @@ def main():
     crearFPS(tablero, piezaDisplay)
     guardarPuntaje(usuario, puntaje)
     mostrarMejoresPuntajes(usuario)
+    jugardenuevo()
 
 main()
