@@ -132,9 +132,13 @@ def guardarUsuarios(usuarios):
 def registrarUsuario():
     clear()
     print("Registrarse")
+    patronUsuario = "([A-Za-z0-9])"
     usuario = input("Ingresa tu nombre de usuario: ")
-    while usuario in cargarUsuarios():
-        print("El nombre de usuario ya existe. Intenta otro.")
+    while usuario in cargarUsuarios() or not search(patronUsuario, usuario):
+        if usuario in cargarUsuarios():
+            print("El nombre de usuario ya existe. Intenta otro.")
+        else:
+            print("El usuario debe contener al menos un caracter ")
         usuario = input("Ingresa tu nombre de usuario: ")
     patron = "(.*[A-Z].*[0-9]|.*[0-9].*[A-Z])"
     banderaContrasena= True
