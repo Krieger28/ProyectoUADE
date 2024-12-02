@@ -2,7 +2,12 @@
     "Bautista": {
         "contrasena": "Bautista5",
         "puntajes": [
-            100
+            100,
+            600,
+            200,
+            100,
+            200,
+            0
         ]
     }
 }

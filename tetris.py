@@ -622,6 +622,11 @@ def finalizarJuego(tablero):
 def jugardenuevo():
     YoN = input("ingresa Y si queres jugar denuevo, sino N: ")
     if YoN.strip() == "y" or YoN.strip() == "Y":
+        global puntaje
+        global nivel
+        nivel = 1
+        puntaje = 0 
+
         piezaDisplay = CrearProxPiezaDisplay()
         tablero = crearTablero()
         crearFPS(tablero, piezaDisplay)
